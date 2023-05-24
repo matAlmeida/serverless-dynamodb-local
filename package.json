@@ -1,6 +1,6 @@
 {
-    "name": "serverless-dynamodb-local",
-    "version": "0.2.40",
+    "name": "@4devso/serverless-dynamodb-local",
+    "version": "1.0.0",
     "engines": {
         "node": ">=4.0"
     },
@@ -9,7 +9,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/99xt/serverless-dynamodb-local"
+        "url": "https://github.com/matAlmeida/serverless-dynamodb-local"
     },
     "keywords": [
         "serverless framework plugin",
@@ -32,14 +32,14 @@
         "test": "mocha ./test"
     },
     "dependencies": {
+        "@4devso/dynamodb-local": "1.0.0",
         "aws-sdk": "^2.7.0",
         "bluebird": "^3.4.6",
-        "dynamodb-localhost": "0.0.9",
         "lodash": "^4.17.0"
     },
     "devDependencies": {
         "chai": "^4.1.1",
-        "mocha": "^6.2.1",
+        "mocha": "^10.2.0",
         "should": "^11.2.1"
     }
 }
