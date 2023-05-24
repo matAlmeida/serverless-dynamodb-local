@@ -2,7 +2,7 @@
 const _ = require("lodash");
 const BbPromise = require("bluebird");
 const AWS = require("aws-sdk");
-const dynamodbLocal = require("dynamodb-localhost");
+const dynamodbLocal = require("@4devso/dynamodb-local");
 const seeder = require("./src/seeder");
 const path = require('path');
 
@@ -13,9 +13,9 @@ class ServerlessDynamodbLocal {
         this.serverlessLog = serverless.cli.log.bind(serverless.cli);
         this.config = this.service.custom && this.service.custom.dynamodb || {};
         this.options = _.merge({
-          localPath: serverless.config && path.join(serverless.config.servicePath, '.dynamodb')
-          },
-          options
+            localPath: serverless.config && path.join(serverless.config.servicePath, '.dynamodb')
+        },
+            options
         );
         this.provider = "aws";
         this.commands = {
@@ -106,9 +106,9 @@ class ServerlessDynamodbLocal {
                         }
                     },
                     noStart: {
-                      shortcut: "n",
-                      default: false,
-                      usage: "Do not start DynamoDB local (in case it is already running)",
+                        shortcut: "n",
+                        default: false,
+                        usage: "Do not start DynamoDB local (in case it is already running)",
                     },
                     remove: {
                         lifecycleEvents: ["removeHandler"],
@@ -159,7 +159,7 @@ class ServerlessDynamodbLocal {
      * @return {String} the current stage
      */
     get stage() {
-      return (this.options && this.options.stage) || (this.service.provider && this.service.provider.stage);
+        return (this.options && this.options.stage) || (this.service.provider && this.service.provider.stage);
     }
 
     /**
@@ -168,16 +168,16 @@ class ServerlessDynamodbLocal {
      * @return {Boolean} if the handler can run for the provided stage
      */
     shouldExecute() {
-      if (this.config.stages && this.config.stages.includes(this.stage)) {
-        return true;
-      }
-      return false;
+        if (this.config.stages && this.config.stages.includes(this.stage)) {
+            return true;
+        }
+        return false;
     }
 
     dynamodbOptions(options) {
         let dynamoOptions = {};
 
-        if(options && options.online){
+        if (options && options.online) {
             this.serverlessLog("Connecting to online tables...");
             if (!options.region) {
                 throw new Error("please specify the region");
@@ -222,9 +222,9 @@ class ServerlessDynamodbLocal {
                     throw new Error("seeding source \"table\" property not defined");
                 }
                 const seedPromise = seeder.locateSeeds(source.sources || [])
-                .then((seeds) => seeder.writeSeeds(dynamodb.doc.batchWrite.bind(dynamodb.doc), source.table, seeds));
+                    .then((seeds) => seeder.writeSeeds(dynamodb.doc.batchWrite.bind(dynamodb.doc), source.table, seeds));
                 const rawSeedPromise = seeder.locateSeeds(source.rawsources || [])
-                .then((seeds) => seeder.writeSeeds(dynamodb.raw.batchWriteItem.bind(dynamodb.raw), source.table, seeds));
+                    .then((seeds) => seeder.writeSeeds(dynamodb.raw.batchWriteItem.bind(dynamodb.raw), source.table, seeds));
                 return BbPromise.all([seedPromise, rawSeedPromise]);
             });
         } else {
@@ -245,9 +245,9 @@ class ServerlessDynamodbLocal {
         if (this.shouldExecute()) {
             const config = this.service.custom && this.service.custom.dynamodb || {};
             const options = _.merge({
-                    sharedDb: this.options.sharedDb || true,
-                    install_path: this.options.localPath
-                },
+                sharedDb: this.options.sharedDb || true,
+                install_path: this.options.localPath
+            },
                 config && config.start,
                 this.options
             );
@@ -257,15 +257,15 @@ class ServerlessDynamodbLocal {
 
             let dbPath = options.dbPath;
             if (dbPath) {
-              options.dbPath = path.isAbsolute(dbPath) ? dbPath : path.join(this.serverless.config.servicePath, dbPath);
+                options.dbPath = path.isAbsolute(dbPath) ? dbPath : path.join(this.serverless.config.servicePath, dbPath);
             }
 
             if (!options.noStart) {
-              dynamodbLocal.start(options);
+                dynamodbLocal.start(options);
             }
             return BbPromise.resolve()
-            .then(() => options.migrate && this.migrateHandler())
-            .then(() => options.seed && this.seedHandler());
+                .then(() => options.migrate && this.migrateHandler())
+                .then(() => options.seed && this.seedHandler());
         } else {
             this.serverlessLog("Skipping start: DynamoDB Local is not available for stage: " + this.stage);
         }
@@ -329,7 +329,7 @@ class ServerlessDynamodbLocal {
         let categories;
         if (typeof seed === "string") {
             categories = seed.split(",");
-        } else if(seed) {
+        } else if (seed) {
             categories = Object.keys(seedConfig);
         } else { // if (!seed)
             this.serverlessLog("DynamoDB - No seeding defined. Skipping data seeding.");
@@ -345,14 +345,14 @@ class ServerlessDynamodbLocal {
                 migration.StreamSpecification.StreamEnabled = true;
             }
             if (migration.TimeToLiveSpecification) {
-              delete migration.TimeToLiveSpecification;
+                delete migration.TimeToLiveSpecification;
             }
             if (migration.SSESpecification) {
-              migration.SSESpecification.Enabled = migration.SSESpecification.SSEEnabled;
-              delete migration.SSESpecification.SSEEnabled;
+                migration.SSESpecification.Enabled = migration.SSESpecification.SSEEnabled;
+                delete migration.SSESpecification.SSEEnabled;
             }
             if (migration.PointInTimeRecoverySpecification) {
-              delete migration.PointInTimeRecoverySpecification;
+                delete migration.PointInTimeRecoverySpecification;
             }
             if (migration.Tags) {
                 delete migration.Tags;
@@ -370,7 +370,7 @@ class ServerlessDynamodbLocal {
                         gsi.ProvisionedThroughput = defaultProvisioning;
                     });
                 }
-              }
+            }
             dynamodb.raw.createTable(migration, (err) => {
                 if (err) {
                     if (err.name === 'ResourceInUseException') {
